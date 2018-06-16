@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Pervasive</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/mystyle.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+</head>
+
+<body>
+  <style>
+    .special {
+      color: blue;
+    }
+  </style>
+
+  <ul class="list">
+    <li>one</li>
+    <li class="special">two</li>
+    <li>
+      <ul class="sublist">
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+      </ul>
+    </li>
+  </ul>
+  <script>
+  $(document).ready(function() {
+    //$('li').eq(3).hide();
+    //$('ul:last').children().hide();
+    //$('li').on('click', function() {
+      //$(this).next().hide();
+      //$(this).next().remove();
+      //$(this).siblings().addClass('special');
+      //$(this).parent().addClass('special');
+      //$(this).closest('.list').addClass('special');
+    //});
+    //$('.list').on('click', function() {
+      //$(this).find('li').filter(':first').addClass('special');
+      //$(this).find('li').filter('.special').remove();
+
+      // $('.special').on('click', function() {
+      //   alert('special');
+      // });
+      // $('li').on('click', function() {
+      //   $(this).hide();
+      //   if( $(this).is('.special') ) {
+      //     alert('special');
+      //   } else if ( !$(this).is('.special') ) {
+      //     alert('not special');
+      //   }
+      // });
+      // $('.sublist li').on('click', function() {
+      //   $(this).hide();
+      // });
+      $('li').on('click', function() {
+        console.log('clicked li');
+        if($(this).parent().is('.sublist')) {
+          $(this).hide();
+        }
+      });
+  });
+  </script>
+ </body>
+</html>﻿

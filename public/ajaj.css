@@ -1,0 +1,12 @@
+.container ul li {
+  
+    background: #999;
+    margin: 20;
+    padding: 3px 10px;
+
+    color: #fff;
+    font-weight: 200;
+    cursor: pointer;
+    margin-bottom: 5px;
+
+}

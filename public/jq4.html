@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Pervasive</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="jq4.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+        <h1 class="text-muted">jQuery Basic Slider</h1>
+    </div>
+
+    <div id="slider">
+        <ul class="slides"> <!--slide container class -->
+            <li class="slide slide1"><img src = "/images/slider1.jpg"></li>
+            <li class="slide slide2"><img src = "/images/slider2.jpg"></li>
+            <li class="slide slide3"><img src = "/images/slider3.jpg"></li>
+            <li class="slide slide4"><img src = "/images/slider4.jpg"></li>
+            <li class="slide slide5"><img src = "/images/slider5.jpg"></li>
+            <li class="slide slide1"><img src = "/images/slider1.jpg"></li>
+        </ul>
+    </div>
+
+  </div>
+
+  <script>
+
+  $(document).ready(function() {
+    var width = 720;
+    var animationSpeed = 1000;
+    var pause = 2000;
+
+    // cache DOM
+    var $slider = $('#slider');  // find the main div id selector
+    var $slideContainer = $slider.find('.slides'); // find the ul container class
+    var $slides = $slideContainer.find('.slide'); // find the individual slide class
+    var currentSlide = 1;
+    var interval;
+
+    function startSlider() {
+      // set setInterval
+      interval = setInterval(function(){
+        // animate margin-left
+        $slideContainer.animate({
+          'margin-left': '-='+width,
+        }, animationSpeed, function() {
+          currentSlide++;
+          // if it's last slide, go to position 1 (0x)
+          if (currentSlide === $('.slide').length) {
+            currentSlide = 1;
+            $slideContainer.css('margin-left',0);
+          }
+        });
+      }, pause);
+    }
+
+    function stopSlider() {
+      clearInterval(interval);
+    }
+
+
+      // listen to mouseenter and pause, resume on mouseleave
+    $slider.on('mouseenter', stopSlider).on('mouseleave', startSlider);
+    startSlider();
+  });
+
+
+
+  </script>
+ </body>
+</html>﻿
