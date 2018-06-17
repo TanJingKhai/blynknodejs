@@ -12,9 +12,34 @@
     <div class="col-md-12">
       <table class="table table-striped">
         <tr><th>Light</th></tr>
-        <tr><td>{{light}}</td></tr>
+        <tr><td id="light">{{light}}</td></tr>
       </table>
     </div>
   </div>
+
+  <script>
+
+  $(document).ready(function(){
+    var $light = $('#light');
+    const AUTH = 'd71ef867ed0f4a4b821d1f6d42b2abf9';
+    const reqUrl = `http://blynk-cloud.com/${AUTH}/get/V5`;
+
+    setInterval(function(){
+      $.ajax({
+        type: 'GET',
+        url: reqUrl,
+        success: function(result){
+          //console.log(result);
+          $light.html(result);
+        },
+        error: function(){
+          console.log('Error in getting light');
+        },
+      });
+    }, 2000);
+
+  });
+
+  </script>
 </body>
 </html>

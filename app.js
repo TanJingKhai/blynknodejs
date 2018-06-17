@@ -4,6 +4,7 @@ const hbs = require('hbs');
 const path = require('path');
 const bodyParser = require('body-parser');
 const server = express();
+const mongoclient = require('./mongoclient');
 
 const AUTH = 'd71ef867ed0f4a4b821d1f6d42b2abf9';
 const reqUrl = `http://blynk-cloud.com/${AUTH}/get/V5`;
@@ -37,6 +38,36 @@ server.get('/data', (req, res) => {
 
 server.get('/chart',(req,res) => {
   res.render('chart.hbs');
+});
+
+//--- testing ajax -----
+server.get('/orders', (req,res) => {
+  mongoclient.getAllData().then((result) => {
+    res.status(200).send(result);
+  }).catch((error) => {
+    res.status(400).send(error);
+  });
+});
+
+
+server.post('/orders', (req, res) => {
+  mongoclient.saveData({
+    name: req.body.name,
+    drink: req.body.drink,
+  }).then((result) => {
+    res.status(200).send(result);
+  }).catch((error) => {
+    res.status(400).send('Error: ' + error);
+  });
+});
+
+server.delete('/orders/:id', (req, res) => {
+  var id = req.params.id;
+  mongoclient.deleteOne(id).then((result) => {
+    res.status(200).send(result);
+  }).catch((error) => {
+    res.status(400).send('Error: ' + error);
+  });
 });
 
 server.listen(port, () => {
