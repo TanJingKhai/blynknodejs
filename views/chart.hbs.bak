@@ -8,32 +8,83 @@
     <p>Chart of data readings</p>
   </div>
 
-  <div class="row container-fluid">
-    <div class="col-md-12">
-      <canvas id="myChart" width="400" height="200"></canvas>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-      <script>
-      var ctx = document.getElementById('myChart').getContext('2d');
-      var chart = new Chart(ctx, {
-          // The type of chart we want to create
-          type: 'line',
-
-          // The data for our dataset
-          data: {
-              labels: ["January", "February", "March", "April", "May", "June", "July"],
-              datasets: [{
-                  label: "My First dataset",
-                  backgroundColor: 'rgb(255, 99, 132)',
-                  borderColor: 'rgb(255, 99, 132)',
-                  data: [0, 10, 5, 2, 20, 30, 45],
-              }]
-          },
-
-          // Configuration options go here
-          options: {}
-        });
-      </script>
+  <div class="container-fluid">
+    <div class="col-md-4">
+      <canvas id="lightChart" width=200 height=100></canvas>
+    </div>
+    <div class="col-md-4">
+      <canvas id="temperatureChart" width=200 height=100></canvas>
+    </div>
+    <div class="col-md-4">
+      <canvas id="humidityChart" width=200 height=100></canvas>
     </div>
   </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+  <script>
+  //------------- chart.js ------------------
+  var lightArray =[];
+
+  var lightData = {
+    //labels: lightArray,
+    datasets: [
+      {
+        label: "Light Value", //Inverse depending on light module
+        data: lightArray,
+      }
+    ],
+  };
+
+  var ctx = document.getElementById('lightChart').getContext('2d');
+
+  var chart = new Chart(ctx, {
+    type: 'line',
+    data: lightData,
+    options: {}
+    });
+
+    //https://github.com/chartjs/Chart.js/issues/1997
+    function moveChart(chart, newLabel, newData) {
+      var removeDataAtLeft = false;
+      if (chart.data.datasets[0].data.length > 10) {
+        removeDataAtLeft = true;
+      }
+      chart.data.labels.push(newLabel); //add new label at the right
+      if (removeDataAtLeft) {
+        chart.data.labels.splice(0,1); //remove first label at left
+      }
+
+      chart.data.datasets.forEach(function(dataset, index){
+        dataset.data.push(newData); //add new data at right
+        if (removeDataAtLeft) {
+          dataset.data.splice(0,1); //remove first data at left
+        }
+      });
+      chart.update();
+    }
+
+    //------------ ajax -----------
+    $(document).ready(function(){
+      // var $light = $('#light');
+      const AUTH = 'd71ef867ed0f4a4b821d1f6d42b2abf9';
+      const reqUrl = `http://blynk-cloud.com/${AUTH}/get/V5`;
+      var labelx = 1;
+
+      setInterval(function(){
+        $.ajax({
+          type: 'GET',
+          url: reqUrl,
+          success: function(result){
+            moveChart(chart,labelx++,parseInt(result));
+          },
+          error: function(){
+            console.log('Error in getting light');
+          },
+        });
+      }, 2000);
+
+    });
+
+  </script>
 </body>
 </html>
