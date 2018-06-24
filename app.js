@@ -26,14 +26,7 @@ server.get('/', (req, res) => {
 });
 
 server.get('/data', (req, res) => {
-  axios.get(reqUrl).then((response) => {
-    //res.status(200).send(response.data[0]);
-    res.render('data.hbs',{
-      light: response.data[0],
-    });
-  }).catch((error) => {
-    res.status(400).send(error);
-  });
+  res.render('data.hbs');
 });
 
 server.get('/chart',(req,res) => {

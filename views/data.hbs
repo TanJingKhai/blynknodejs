@@ -8,11 +8,23 @@
     <p>Data from IoT Device</p>
   </div>
 
-  <div class="row container-fluid">
-    <div class="col-md-12">
+  <div class="container-fluid">
+    <div class="col-md-4">
       <table class="table table-striped">
         <tr><th>Light</th></tr>
-        <tr><td id="light">{{light}}</td></tr>
+        <tr><td id="light">light</td></tr>
+      </table>
+    </div>
+    <div class="col-md-4">
+      <table class="table table-striped">
+        <tr><th>Temperature</th></tr>
+        <tr><td id="temperature">temperature</td></tr>
+      </table>
+    </div>
+    <div class="col-md-4">
+      <table class="table table-striped">
+        <tr><th>Humidity</th></tr>
+        <tr><td id="humidity">humidity</td></tr>
       </table>
     </div>
   </div>
@@ -21,19 +33,44 @@
 
   $(document).ready(function(){
     var $light = $('#light');
+    var $temperature = $('#temperature');
+    var $humidity = $('#humidity');
     const AUTH = 'd71ef867ed0f4a4b821d1f6d42b2abf9';
-    const reqUrl = `http://blynk-cloud.com/${AUTH}/get/V5`;
+    const lightReqUrl = `http://blynk-cloud.com/${AUTH}/get/V5`;
+    const temperatureReqUrl = `http://blynk-cloud.com/${AUTH}/get/V5`;
+    const humidityReqUrl = `http://blynk-cloud.com/${AUTH}/get/V5`;
 
     setInterval(function(){
       $.ajax({
         type: 'GET',
-        url: reqUrl,
+        url: lightReqUrl,
         success: function(result){
-          //console.log(result);
           $light.html(result);
         },
         error: function(){
           console.log('Error in getting light');
+        },
+      });
+
+      $.ajax({
+        type: 'GET',
+        url: temperatureReqUrl,
+        success: function(result){
+          $temperature.html(result);
+        },
+        error: function(){
+          console.log('Error in getting temperature');
+        },
+      });
+
+      $.ajax({
+        type: 'GET',
+        url: humidityReqUrl,
+        success: function(result){
+          $humidity.html(result);
+        },
+        error: function(){
+          console.log('Error in getting humidity');
         },
       });
     }, 2000);
