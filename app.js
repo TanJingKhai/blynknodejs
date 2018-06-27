@@ -33,7 +33,24 @@ server.get('/chart',(req,res) => {
   res.render('chart.hbs');
 });
 
-//--- testing ajax -----
+server.get('/historical', (req,res) => {
+  res.render('historical.hbs');
+});
+
+//--- ajax from historical.hbs ---
+server.post('/light', (req, res) => {
+  mongoclient.saveData({
+    id: req.body.id,
+    value: req.body.value,
+  }).then((result) => {
+    res.status(200).send(result);
+  }).catch((error) => {
+    res.status(400).send("Error saving light data to mongodb: ", error);
+  });
+});
+
+
+//--- testing ajax from ajaj.html -----
 server.get('/orders', (req,res) => {
   mongoclient.getAllData().then((result) => {
     res.status(200).send(result);

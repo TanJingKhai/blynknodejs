@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Pervasive</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/mystyle.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+
+<body>
+  <div>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Pervasive</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="home">Home</a></li>
+          <li><a href="data">Data</a></li>
+          <li><a href="chart">Chart</a></li>
+          <li><a href="historical">Light History</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="jumbotron text-center">
+    <h1>Chart</h1>
+    <p>Chart of data readings</p>
+  </div>
+
+  <div class="container-fluid">
+    <div class="col-md-4">
+      <canvas id="lightChart" width=200 height=100></canvas>
+    </div>
+    <div class="col-md-4">
+      <canvas id="temperatureChart" width=200 height=100></canvas>
+    </div>
+    <div class="col-md-4">
+      <canvas id="humidityChart" width=200 height=100></canvas>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+  <script>
+  //------------- chart.js ------------------
+  var lightCtx = document.getElementById('lightChart').getContext('2d');
+  var temperatureCtx = document.getElementById('temperatureChart').getContext('2d');
+  var humidityCtx = document.getElementById('humidityChart').getContext('2d');
+
+  var lightChart = new Chart(lightCtx, {
+    type: 'line',
+    data: {
+      datasets: [
+        {
+          label: "Light value",
+          data: [],
+        },
+      ]
+    }
+  });
+
+  var temperatureChart = new Chart(temperatureCtx, {
+    type: 'line',
+    data: {
+      datasets: [
+        {
+          label: "Temperature value",
+          data: [],
+        },
+      ]
+    }
+  });
+
+  var humidityChart = new Chart(humidityCtx, {
+    type: 'line',
+    data: {
+      datasets: [
+        {
+          label: "Humidity value",
+          data: [],
+        },
+      ]
+    }
+  });
+
+  //https://github.com/chartjs/Chart.js/issues/1997
+  function moveChart(chart, newLabel, newData) {
+    var removeDataAtLeft = false;
+    if (chart.data.datasets[0].data.length > 10) {
+      removeDataAtLeft = true;
+    }
+    chart.data.labels.push(newLabel); //add new label at the right
+    if (removeDataAtLeft) {
+      chart.data.labels.splice(0,1); //remove first label at left
+    }
+
+    chart.data.datasets.forEach(function(dataset, index){
+      dataset.data.push(newData); //add new data at right
+      if (removeDataAtLeft) {
+        dataset.data.splice(0,1); //remove first data at left
+      }
+    });
+    chart.update();
+  }
+
+    //------------ ajax -----------
+    $(document).ready(function(){
+      // var $light = $('#light');
+      const AUTH = 'd71ef867ed0f4a4b821d1f6d42b2abf9';
+      const lightReqUrl = `http://blynk-cloud.com/${AUTH}/get/V5`;
+      var lightLabelx = 1;
+      const temperatureReqUrl = `http://blynk-cloud.com/${AUTH}/get/V6`;
+      var temperatureLabelx = 1;
+      const humidityReqUrl = `http://blynk-cloud.com/${AUTH}/get/V7`;
+      var humidityLabelx = 1;
+
+      setInterval(function(){
+        $.ajax({
+          type: 'GET',
+          url: lightReqUrl,
+          success: function(result){
+            moveChart(lightChart,lightLabelx++,parseInt(result));
+          },
+          error: function(){
+            console.log('Error in getting light');
+          },
+        });
+
+        $.ajax({
+          type: 'GET',
+          url: temperatureReqUrl,
+          success: function(result){
+            moveChart(temperatureChart,temperatureLabelx++,parseInt(result));
+          },
+          error: function(){
+            console.log('Error in getting temperature');
+          },
+        });
+
+        $.ajax({
+          type: 'GET',
+          url: humidityReqUrl,
+          success: function(result){
+            moveChart(humidityChart,humidityLabelx++,parseInt(result));
+          },
+          error: function(){
+            console.log('Error in getting humidity');
+          },
+        });
+
+      }, 2000);
+    });
+
+  </script>
+</body>
+</html>

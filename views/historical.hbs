@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> header}}
+<body>
+  {{> navbar}}
+  <div class="jumbotron text-center">
+    <h1>Historical Light Data</h1>
+    <p>Previous Light data readings</p>
+     <button class="panel-button" id="go">Go</button>
+  </div>
+
+  <div class="container-fluid">
+    <div class="col-md-12">
+      <canvas id="historicallight" width=400 height=100></canvas>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+  <script>
+  //------------- chart.js ------------------
+  var lightCtx = document.getElementById('historicallight').getContext('2d');
+
+  var lightChart = new Chart(lightCtx, {
+    type: 'line',
+    data: {
+      datasets: [
+        {
+          label: "Light value",
+          data: [],
+        },
+      ]
+    }
+  });
+
+
+
+  //https://github.com/chartjs/Chart.js/issues/1997
+  function moveChart(chart, newLabel, newData) {
+    var removeDataAtLeft = false;
+    if (chart.data.datasets[0].data.length > 10) {
+      removeDataAtLeft = true;
+    }
+    chart.data.labels.push(newLabel); //add new label at the right
+    if (removeDataAtLeft) {
+      chart.data.labels.splice(0,1); //remove first label at left
+    }
+
+    chart.data.datasets.forEach(function(dataset, index){
+      dataset.data.push(newData); //add new data at right
+      if (removeDataAtLeft) {
+        dataset.data.splice(0,1); //remove first data at left
+      }
+    });
+    chart.update();
+  }
+
+    //------------ ajax -----------
+    $(document).ready(function(){
+      // var $light = $('#light');
+      const AUTH = 'd71ef867ed0f4a4b821d1f6d42b2abf9';
+      const lightReqUrl = `http://blynk-cloud.com/${AUTH}/get/V5`;
+      var lightLabelx = 1;
+      var counter = 1;
+
+      setInterval(function(){
+        $.ajax({
+          type: 'GET',
+          url: lightReqUrl,
+          success: function(result){
+            console.log(result[0]);
+            $.ajax({
+              type: 'POST',
+              url: 'http://localhost:3000/light',
+              data: {
+                id: counter++,
+                value: result[0],
+              },
+              success: function(result2) {
+                console.log('successfully saved to mongodb');
+              },
+              error: function() {
+                alert('error saving light value');
+              },
+            });
+          },
+          error: function(){
+            console.log('Error in getting light');
+          },
+        });
+
+      }, 15000);
+    });
+
+  </script>
+</body>
+</html>
